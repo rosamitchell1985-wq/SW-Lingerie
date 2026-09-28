@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart — SW Lingerie | swlingerie.shop</title>
+<meta name="description" content="Review your cart and check out securely. Free U.S. shipping over $75.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%232a160d'/><text x='50' y='66' font-size='46' text-anchor='middle' fill='%23fcfcf8' font-family='Georgia'>SW</text></svg>">
+</head>
+<body>
+<div id="site-header" data-page=""></div>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Your Cart</h1>
+      <p class="sub">Take your time. Everything in your cart is saved on this device until you're ready.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap" id="cart-root"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+function renderCart() {
+  const cart = getCart();
+  const root = document.getElementById("cart-root");
+
+  if (!cart.length) {
+    root.innerHTML = `
+      <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Browse our collection of ten comfort-first pieces, chosen especially for women over sixty.</p>
+        <a class="btn btn-primary btn-lg" href="shop.html">Start Shopping</a>
+      </div>`;
+    return;
+  }
+
+  const subtotal = cartSubtotal();
+  const shipping = cartShipping(subtotal);
+  const total = subtotal + shipping;
+  const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+
+  const rows = cart.map(item => {
+    const p = getProduct(item.id);
+    if (!p) return "";
+    return `
+    <div class="cart-item">
+      <a href="product.html?id=${p.id}"><img src="${p.image}" alt="${p.name}"></a>
+      <div>
+        <h3><a href="product.html?id=${p.id}" style="text-decoration:none;color:var(--ink)">${p.name}</a></h3>
+        <p class="meta">Size: <strong>${item.size}</strong></p>
+        <p class="unit">${formatUSD(p.price)} each</p>
+        <div class="qty-control" style="margin-top:10px">
+          <button type="button" aria-label="Decrease quantity" data-dec="${p.id}|${item.size}">−</button>
+          <input type="text" inputmode="numeric" value="${item.qty}" aria-label="Quantity for ${p.name}" data-qty="${p.id}|${item.size}">
+          <button type="button" aria-label="Increase quantity" data-inc="${p.id}|${item.size}">+</button>
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <span class="line-total">${formatUSD(p.price * item.qty)}</span>
+        <button class="remove-btn" data-remove="${p.id}|${item.size}">Remove</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  root.innerHTML = `
+  <div class="cart-layout">
+    <div>
+      ${remaining > 0
+        ? `<p style="background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:16px 22px;font-size:1.08rem;margin-bottom:26px">
+             You're <strong>${formatUSD(remaining)}</strong> away from <strong>free shipping</strong>.</p>`
+        : `<p style="background:#e7f0e7;border:1px solid var(--success);border-radius:8px;padding:16px 22px;font-size:1.08rem;margin-bottom:26px">
+             Congratulations — your order ships <strong>free</strong>.</p>`}
+      ${rows}
+      <p style="margin-top:26px"><a href="shop.html" class="text-link">← Continue shopping</a></p>
+    </div>
+    <aside class="summary-card" aria-label="Order summary">
+      <h2>Order Summary</h2>
+      <div class="summary-row"><span>Subtotal</span><span>${formatUSD(subtotal)}</span></div>
+      <div class="summary-row"><span>Shipping</span><span>${shipping === 0 ? "FREE" : formatUSD(shipping)}</span></div>
+      <div class="summary-row total"><span>Total</span><span>${formatUSD(total)}</span></div>
+      <p class="summary-note">Taxes calculated at checkout based on your state. 90-day free returns on every item.</p>
+      <a class="btn btn-primary btn-lg btn-block" href="checkout.html">Proceed to Checkout</a>
+      <p class="secure-note" style="justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Secure checkout · Visa · Mastercard · Amex · PayPal · Apple Pay
+      </p>
+    </aside>
+  </div>`;
+
+  root.querySelectorAll("[data-inc]").forEach(b => b.addEventListener("click", () => {
+    const [id, size] = b.dataset.inc.split("|");
+    const it = getCart().find(i => i.id == id && i.size === size);
+    if (it) { setCartQty(Number(id), size, it.qty + 1); renderCart(); }
+  }));
+  root.querySelectorAll("[data-dec]").forEach(b => b.addEventListener("click", () => {
+    const [id, size] = b.dataset.dec.split("|");
+    const it = getCart().find(i => i.id == id && i.size === size);
+    if (it) { setCartQty(Number(id), size, it.qty - 1); renderCart(); }
+  }));
+  root.querySelectorAll("[data-qty]").forEach(inp => inp.addEventListener("change", () => {
+    const [id, size] = inp.dataset.qty.split("|");
+    setCartQty(Number(id), size, parseInt(inp.value) || 1);
+    renderCart();
+  }));
+  root.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", () => {
+    const [id, size] = b.dataset.remove.split("|");
+    removeFromCart(Number(id), size);
+    showToast("Item removed from your cart.");
+    renderCart();
+  }));
+}
+renderCart();
+</script>
+</body>
+</html>

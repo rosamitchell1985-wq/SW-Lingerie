@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — SW Lingerie | swlingerie.shop</title>
+<meta name="description" content="Thank you for your order.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%232a160d'/><text x='50' y='66' font-size='46' text-anchor='middle' fill='%23fcfcf8' font-family='Georgia'>SW</text></svg>">
+</head>
+<body>
+<div id="site-header" data-page=""></div>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap" id="confirm-root"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const root = document.getElementById("confirm-root");
+  let order = null;
+  try { order = JSON.parse(localStorage.getItem("swl_last_order")); } catch (e) {}
+
+  if (!order) {
+    root.innerHTML = `<div class="empty-cart"><h2>No recent order found</h2><p>If you just placed an order, it may still be processing. Otherwise, browse our collection below.</p><a class="btn btn-primary btn-lg" href="shop.html">Browse the Collection</a></div>`;
+    return;
+  }
+
+  const lines = order.items.map(i => `
+    <div class="order-line">
+      <img src="${i.image}" alt="">
+      <div><div class="ol-name">${i.name}</div><div class="ol-meta">Size ${i.size} · Qty ${i.qty}</div></div>
+      <span class="ol-price">${formatUSD(i.price * i.qty)}</span>
+    </div>`).join("");
+
+  root.innerHTML = `
+  <div class="confirm-box">
+    <div class="confirm-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12.5l5 5L20 6.5"/></svg>
+    </div>
+    <h1>Thank you, your order is confirmed!</h1>
+    <p style="font-size:1.2rem;color:var(--ink-soft);max-width:56ch;margin:0 auto">
+      A confirmation email is on its way to <strong>${order.email}</strong>.
+      We'll email tracking as soon as your parcel leaves our Portland studio.
+    </p>
+    <div class="order-num">Order ${order.number}</div>
+  </div>
+
+  <div class="confirm-details">
+    <div class="summary-card" style="position:static;margin-bottom:28px">
+      <h2>Order Details</h2>
+      ${lines}
+      <div class="summary-row" style="margin-top:14px"><span>Subtotal</span><span>${formatUSD(order.subtotal)}</span></div>
+      <div class="summary-row"><span>Shipping</span><span>${order.shipping === 0 ? "FREE" : formatUSD(order.shipping)}</span></div>
+      <div class="summary-row"><span>Estimated tax</span><span>${formatUSD(order.tax)}</span></div>
+      <div class="summary-row total"><span>Paid (${order.method})</span><span>${formatUSD(order.total)}</span></div>
+    </div>
+    <div class="summary-card" style="position:static">
+      <h2>Delivery</h2>
+      <p style="font-size:1.08rem;margin-bottom:8px"><strong>${order.name}</strong></p>
+      <p style="font-size:1.08rem;color:var(--ink-soft)">${order.address}</p>
+      <p style="font-size:1.05rem;color:var(--ink-soft);margin-top:14px">Estimated arrival: <strong>3–5 business days</strong> via USPS or UPS, in discreet unbranded packaging.</p>
+      <p style="font-size:1.05rem;color:var(--ink-soft);margin-top:10px">Questions about your order? Call <a href="tel:+18005550142" style="font-weight:700">1-800-555-0142</a> or visit our <a href="contact.html">contact page</a>.</p>
+    </div>
+    <div style="text-align:center;margin-top:44px">
+      <a class="btn btn-primary btn-lg" href="shop.html">Continue Shopping</a>
+    </div>
+  </div>`;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop All 10 Products — SW Lingerie | swlingerie.shop</title>
+<meta name="description" content="Shop wire-free front-closure bras, full-coverage cotton briefs, nightgowns, robes and lounge sets — all designed for women over sixty. Free U.S. shipping over $75.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%232a160d'/><text x='50' y='66' font-size='46' text-anchor='middle' fill='%23fcfcf8' font-family='Georgia'>SW</text></svg>">
+</head>
+<body>
+<div id="site-header" data-page="shop"></div>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>The Collection</h1>
+      <p class="sub">Ten carefully chosen pieces — every one wire-free, tag-free, and wear-tested by women aged 62 to 84. Free U.S. shipping on orders over $75.</p>
+    </div>
+  </section>
+
+  <section class="section" id="bras">
+    <div class="wrap">
+      <div class="split-heading">
+        <span class="sh-left">Wireless Bras</span>
+        <span class="sh-right">Support, without the wire</span>
+      </div>
+      <div class="product-grid" data-cat-grid="Wireless Bras"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="sleepwear">
+    <div class="wrap">
+      <div class="split-heading">
+        <span class="sh-left">Sleepwear, Robes & Camisoles</span>
+        <span class="sh-right">Soft hours, soft fabrics</span>
+      </div>
+      <div class="product-grid" data-cat-grid="Sleepwear"></div>
+      <div class="product-grid" style="margin-top:40px" data-cat-grid="RobesCamisoles"></div>
+    </div>
+  </section>
+
+  <section class="section" id="panties">
+    <div class="wrap">
+      <div class="split-heading">
+        <span class="sh-left">Panties</span>
+        <span class="sh-right">Full coverage, true comfort</span>
+      </div>
+      <div class="product-grid" data-cat-grid="Panties"></div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+function cardHTML(p) {
+  return `
+    <a class="product-card reveal" href="product.html?id=${p.id}">
+      <div class="p-img">
+        ${p.badge ? `<span class="p-badge ${p.badge === "Bestseller" ? "badge-bestseller" : ""}">${p.badge}</span>` : ""}
+        <img src="${p.image}" alt="${p.name}" loading="lazy">
+      </div>
+      <div class="p-info">
+        <div class="p-rating" aria-label="Rated ${p.rating} out of 5">${starsHTML(p.rating)} <span class="count">(${p.reviews})</span></div>
+        <h3>${p.name}</h3>
+        <p class="p-desc">${p.short}</p>
+        <p class="p-price">${formatUSD(p.price)}${p.compareAt ? `<span class="compare">${formatUSD(p.compareAt)}</span>` : ""}</p>
+      </div>
+    </a>`;
+}
+document.querySelector('[data-cat-grid="Wireless Bras"]').innerHTML =
+  PRODUCTS.filter(p => p.category === "Wireless Bras").map(cardHTML).join("");
+document.querySelector('[data-cat-grid="Sleepwear"]').innerHTML =
+  PRODUCTS.filter(p => p.category === "Sleepwear").map(cardHTML).join("");
+document.querySelector('[data-cat-grid="RobesCamisoles"]').innerHTML =
+  PRODUCTS.filter(p => p.category === "Robes" || p.category === "Camisoles").map(cardHTML).join("");
+document.querySelector('[data-cat-grid="Panties"]').innerHTML =
+  PRODUCTS.filter(p => p.category === "Panties").map(cardHTML).join("");
+</script>
+</body>
+</html>

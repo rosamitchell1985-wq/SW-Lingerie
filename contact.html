@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — SW Lingerie | swlingerie.shop</title>
+<meta name="description" content="Reach SW Lingerie by phone, email, or mail. Real people, Mon–Sat 8am–8pm ET.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%232a160d'/><text x='50' y='66' font-size='46' text-anchor='middle' fill='%23fcfcf8' font-family='Georgia'>SW</text></svg>">
+</head>
+<body>
+<div id="site-header" data-page="contact"></div>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Contact Us</h1>
+      <p class="sub">Call, write, or send a message below. A real person — usually Diane or Carol — will take care of you.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap contact-layout">
+      <div>
+        <div class="contact-info-item">
+          <h3>Call Us — Fastest</h3>
+          <p><a href="tel:+18005550142" style="font-size:1.6rem;font-weight:800;text-decoration:none;color:var(--ink)">1-800-555-0142</a></p>
+          <p style="color:var(--ink-soft)">Monday–Saturday, 8am–8pm Eastern<br>Order by phone, fit advice, returns — anything.</p>
+        </div>
+        <div class="contact-info-item">
+          <h3>Email</h3>
+          <p><a href="mailto:hello@swlingerie.shop">hello@swlingerie.shop</a><br>
+          <a href="mailto:returns@swlingerie.shop">returns@swlingerie.shop</a> (returns & exchanges)</p>
+          <p style="color:var(--ink-soft)">We reply within one business day.</p>
+        </div>
+        <div class="contact-info-item">
+          <h3>Mail</h3>
+          <p>SW Lingerie, LLC<br>2148 NW Flanders Street<br>Portland, OR 97210</p>
+        </div>
+        <div class="contact-info-item">
+          <h3>Order Status</h3>
+          <p style="color:var(--ink-soft)">Every order ships with tracking by email. If you can't find yours, call us with your order number (it begins with "SWL-") and we'll look it up together.</p>
+        </div>
+      </div>
+
+      <div class="contact-form-card">
+        <h2 style="font-size:1.9rem;margin-bottom:8px">Send Us a Message</h2>
+        <p style="color:var(--ink-soft);margin-bottom:26px">We read every note ourselves and reply within one business day.</p>
+        <form id="contact-form" novalidate>
+          <div class="form-grid">
+            <div class="field"><label for="cf-name">Your name <span class="req">*</span></label><input id="cf-name" autocomplete="name"><div class="error-text">Please enter your name.</div></div>
+            <div class="field"><label for="cf-email">Email address <span class="req">*</span></label><input id="cf-email" type="email" autocomplete="email"><div class="error-text">Please enter a valid email address.</div></div>
+            <div class="field full"><label for="cf-topic">What is this about? <span class="req">*</span></label>
+              <select id="cf-topic">
+                <option value="">Choose a topic</option>
+                <option>Help choosing a size or style</option>
+                <option>Question about my order</option>
+                <option>Return or exchange</option>
+                <option>Website or accessibility help</option>
+                <option>Something else</option>
+              </select>
+              <div class="error-text">Please choose a topic.</div></div>
+            <div class="field full"><label for="cf-msg">Your message <span class="req">*</span></label><textarea id="cf-msg" placeholder="Tell us how we can help…"></textarea><div class="error-text">Please write a few words so we can help.</div></div>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" type="submit" style="margin-top:22px">Send Message</button>
+          <p class="form-msg" id="cf-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.getElementById("contact-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const name = document.getElementById("cf-name");
+  const email = document.getElementById("cf-email");
+  const topic = document.getElementById("cf-topic");
+  const msg = document.getElementById("cf-msg");
+  let ok = true;
+  const check = (el, valid) => { el.closest(".field").classList.toggle("invalid", !valid); return valid; };
+  ok = check(name, name.value.trim().length >= 2) && ok;
+  ok = check(email, /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) && ok;
+  ok = check(topic, topic.value !== "") && ok;
+  ok = check(msg, msg.value.trim().length >= 10) && ok;
+  if (!ok) return;
+
+  const inbox = JSON.parse(localStorage.getItem("swl_messages") || "[]");
+  inbox.push({ name: name.value.trim(), email: email.value.trim(), topic: topic.value, message: msg.value.trim(), date: new Date().toISOString() });
+  localStorage.setItem("swl_messages", JSON.stringify(inbox));
+
+  const status = document.getElementById("cf-status");
+  status.textContent = "Thank you, " + name.value.trim().split(" ")[0] + "! Your message has been sent. We'll reply within one business day.";
+  status.className = "form-msg ok";
+  this.reset();
+});
+</script>
+</body>
+</html>
